@@ -16,6 +16,9 @@ import {
 
 dotenv.config();
 
+const PORT = process.env.PORT || 8080;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
@@ -24,9 +27,6 @@ app.use(cors({
   origin: FRONTEND_URL,
   credentials: true,
 }));
-
-const PORT = process.env.PORT || 8080;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
 const CLIENT_ID = process.env.CLIENT_ID;

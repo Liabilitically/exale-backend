@@ -41,6 +41,13 @@ const COOKIE_OPTIONS = {
   secure: true,
 };
 
+// ============= Temporary =============
+
+app.post('/debug-body', (req, res) => {
+  console.log('DEBUG BODY:', req.body);
+  res.json({ received: req.body });
+});
+
 // =============== Utils ===============
 
 function getGmailCreds(accessToken, refreshToken) {

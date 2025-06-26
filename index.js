@@ -99,6 +99,7 @@ async function getUserEmail(auth) {
 // =============== AUTH =================
 
 app.post('/authenticate', async (req, res) => {
+  console.log('AUTH CALLBACK RECEIVED:', req.body);
   const code = req.body.code;
   const tokenRes = await fetch(TOKEN_URI, {
     method: 'POST',

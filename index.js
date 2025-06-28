@@ -19,6 +19,9 @@ dotenv.config();
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
+const express = require('express');
+const cors = require('cors');
+
 const app = express();
 app.use(cookieParser());
 app.use(express.json());

@@ -1,12 +1,19 @@
-import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
-// Initialize Firestore Admin SDK
+const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+if (!fs.existsSync(serviceAccountPath)) {
+  throw new Error(`Missing service account file at ${serviceAccountPath}`);
+}
+
+// Initialize Firebase Admin SDK
 initializeApp({
-  credential: applicationDefault()
+  credential: cert(JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8')))
 });
 
 const db = getFirestore();

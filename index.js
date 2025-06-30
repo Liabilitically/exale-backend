@@ -19,9 +19,6 @@ dotenv.config();
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-const express = require('express');
-const cors = require('cors');
-
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
@@ -50,6 +47,7 @@ app.post('/debug-body', (req, res) => {
   console.log('DEBUG BODY:', req.body);
   res.json({ received: req.body });
 });
+
 
 // =============== Utils ===============
 
@@ -109,9 +107,7 @@ async function getUserEmail(auth) {
 // =============== AUTH =================
 
 app.post('/authenticate', async (req, res) => {
-  console.log('AUTH CALLBACK -- REQ:', req);
-  console.log('AUTH CALLBACK -- REQ HEADERS:', req);
-  console.log('AUTH CALLBACK -- REQ BODY CODE:', req.body.code);
+  console.log('AUTH CALLBACK RECEIVED:', req);
   const code = req.body.code;
   const tokenRes = await fetch(TOKEN_URI, {
     method: 'POST',

@@ -70,7 +70,12 @@ async function getAllStoredLeads(email) {
 
 // ======= Gmail Helpers =======
 function getGmailCreds(accessToken, refreshToken) {
-  return new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI).setCredentials({ access_token: accessToken, refresh_token: refreshToken });
+  const auth = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+  auth.setCredentials({
+    access_token: accessToken,
+    refresh_token: refreshToken
+  });
+  return auth;
 }
 
 function buildGmailClient(auth) {
@@ -134,15 +139,28 @@ app.post('/authenticate', async (req, res) => {
 
 app.get('/check-user', async (req, res) => {
   const { access_token, refresh_token } = req.cookies;
-  if (!access_token || !refresh_token) return res.status(401).json({ detail: 'Missing cookies' });
+  if (!access_token || !refresh_token)
+    return res.status(401).json({ detail: 'Missing cookies' });
+
+  let email;
   try {
-    const email = await getUserEmail(getGmailCreds(access_token, refresh_token));
-    if (!(await isUserAllowed(email))) return res.status(403).json({ detail: 'User not allowed' });
-    res.json({ status: 'ok' });
+    const creds = getGmailCreds(access_token, refresh_token);
+    email = await getUserEmail(creds);
   } catch (err) {
-    console.error('User check failed:', err);
-    res.status(403).json({ detail: 'Invalid user' });
+    try {
+      const [emailRes, newToken] = await retryWithRefresh(getUserEmail, refresh_token);
+      email = emailRes;
+      res.cookie('access_token', newToken, COOKIE_OPTIONS);
+    } catch (refreshErr) {
+      console.error('Token refresh failed:', refreshErr);
+      return res.status(401).json({ detail: 'Token invalid' });
+    }
   }
+
+  const allowed = await isUserAllowed(email);
+  if (!allowed) return res.status(403).json({ detail: 'User not registered' });
+
+  return res.json({ status: 'ok' });
 });
 
 app.post('/read-emails', async (req, res) => {

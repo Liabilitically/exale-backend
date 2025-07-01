@@ -132,9 +132,16 @@ app.post('/authenticate', async (req, res) => {
   const { access_token, refresh_token } = tokenRes;
   if (!access_token || !refresh_token) return res.status(400).json({ detail: 'Missing token(s)' });
 
-  res.cookie('access_token', access_token, COOKIE_OPTIONS)
-    .cookie('refresh_token', refresh_token, COOKIE_OPTIONS)
-    .json({ message: 'Authenticated' });
+  res
+  .cookie('access_token', access_token, COOKIE_OPTIONS)        // HttpOnly for security
+  .cookie('refresh_token', refresh_token, COOKIE_OPTIONS)      // HttpOnly for security
+  .cookie('logged_in', 'true', {
+    sameSite: 'None',
+    secure: true,
+    maxAge: 3600,
+  })                                                           // ✅ Readable by middleware
+  .json({ message: 'Authenticated' });
+
 });
 
 app.get('/check-user', async (req, res) => {

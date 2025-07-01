@@ -7,7 +7,8 @@ import fetch from 'node-fetch';
 import base64url from 'base64url';
 import { google } from 'googleapis';
 import admin from 'firebase-admin';
-import serviceAccount from './serviceAccountKey.json' assert { type: 'json' };
+import fs from 'fs';
+const serviceAccount = JSON.parse(fs.readFileSync('./serviceAccountKey.json', 'utf8'));
 
 // Firestore Setup
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });

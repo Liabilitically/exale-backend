@@ -135,11 +135,6 @@ app.post('/authenticate', async (req, res) => {
   res
   .cookie('access_token', access_token, COOKIE_OPTIONS)        // HttpOnly for security
   .cookie('refresh_token', refresh_token, COOKIE_OPTIONS)      // HttpOnly for security
-  .cookie('logged_in', 'true', {
-    sameSite: 'None',
-    secure: true,
-    maxAge: 3600,
-  })                                                           // ✅ Readable by middleware
   .json({ message: 'Authenticated' });
 
 });
